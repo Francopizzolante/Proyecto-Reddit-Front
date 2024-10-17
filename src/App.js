@@ -8,13 +8,18 @@ import CrearPostPage from './Pages/CrearPostPage';
 import LikesPage from './Pages/LikesPage';
 import PostsPage from './Pages/PostsPage';
 import CommentsPage from './Pages/CommentsPage';
+import posts from './data/posts';
+import likes from './data/likes';
+import comments from './data/comments';
 import './App.css';
 
 function App() {
   const { loginWithRedirect, isAuthenticated, logout, user } = useAuth0();
 
-  // Estado para almacenar los posts creados por el usuario
-  const [userPosts, setUserPosts] = useState([]);
+  // Puedes usar los datos simulados
+  const [userPosts, setUserPosts] = useState(posts);
+  const [userLikes, setUserLikes] = useState(likes);
+  const [userComments, setUserComments] = useState(comments);
 
   if (!isAuthenticated) {
     return <Inicio onLoginClick={loginWithRedirect} />;
@@ -24,9 +29,9 @@ function App() {
     <Router>
       <Routes>
         <Route path="/crear-post" element={<CrearPostPage user={user} logout={logout} />} />
-        <Route path="/likes" element={<LikesPage user={user} logout={logout} likedPosts={[]} />} />
-        <Route path="/posts" element={<PostsPage user={user} logout={logout} userPosts={[]} />} />
-        <Route path="/comments" element={<CommentsPage user={user} logout={logout} userComments={[]} />} />
+        <Route path="/likes" element={<LikesPage user={user} logout={logout} likedPosts={userLikes} />} />
+        <Route path="/posts" element={<PostsPage user={user} logout={logout} userPosts={userPosts} />} />
+        <Route path="/comments" element={<CommentsPage user={user} logout={logout} userComments={userComments} />} />
         <Route path="/" element={<Home user={user} logout={logout} />} />
       </Routes>
     </Router>
@@ -34,4 +39,3 @@ function App() {
 }
 
 export default App;
-

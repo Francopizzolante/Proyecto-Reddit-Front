@@ -3,15 +3,29 @@ import React, { useState } from 'react';
 
 function CrearPost() {
   const [titulo, setTitulo] = useState('');
-  const [contenido, setContenido] = useState('');
+  const [descripcion, setDescripcion] = useState(''); // Cambiado a descripción
+  const [imagen, setImagen] = useState(null); // Estado para la imagen
+  const [imagenPreview, setImagenPreview] = useState(null); // Estado para la vista previa de la imagen
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aquí deberías manejar la lógica para guardar el post (por ejemplo, enviarlo a un backend)
-    console.log('Post creado:', { titulo, contenido });
-    // Resetea el formulario después de enviar
+
+    if (!imagen) {
+      alert('Por favor, sube una imagen para el post.');
+      return;
+    }
+
+    console.log('Post creado:', { titulo, descripcion, imagen });
     setTitulo('');
-    setContenido('');
+    setDescripcion('');
+    setImagen(null);
+    setImagenPreview(null); // Limpiar la vista previa después de crear el post
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImagen(file);
+    setImagenPreview(URL.createObjectURL(file)); // Mostrar la vista previa
   };
 
   return (
@@ -31,13 +45,32 @@ function CrearPost() {
         </div>
 
         <div className="form-group">
-          <label htmlFor="contenido">Contenido del post</label>
+          <label htmlFor="imagen">Subir imagen</label>
+          <input
+            type="file"
+            className="form-control"
+            id="imagen"
+            accept="image/*"
+            onChange={handleImageChange}
+            required
+          />
+        </div>
+
+        {imagenPreview && (
+          <div className="mt-3">
+            <h5>Vista previa de la imagen:</h5>
+            <img src={imagenPreview} alt="Vista previa" style={{ maxHeight: '300px' }} />
+          </div>
+        )}
+
+        <div className="form-group">
+          <label htmlFor="descripcion">Descripción del post</label>
           <textarea
             className="form-control"
-            id="contenido"
+            id="descripcion"
             rows="5"
-            value={contenido}
-            onChange={(e) => setContenido(e.target.value)}
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
             required
           ></textarea>
         </div>
