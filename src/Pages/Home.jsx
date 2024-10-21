@@ -3,7 +3,6 @@ import React from 'react';
 import BarraLateral from '../Componentes/BarraLateral';
 import BarraSuperior from '../Componentes/BarraSuperior';
 import SeccionPosts from '../Componentes/SeccionPosts';
-import './Home.css';
 
 function Home({ user, logout }) {
   return (

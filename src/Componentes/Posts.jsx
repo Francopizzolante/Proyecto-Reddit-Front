@@ -15,7 +15,7 @@ function Posts({ userPosts, userName }) {
               <span>{post.date}</span>
             </div>
             <h4 className="mt-2">{post.title}</h4>
-            <div className="image-container bg-white text-center mb-3" style={{ height: '200px' }}>
+            <div className="image-container bg-white text-center mb-3" style={{ height: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px', backgroundColor: '#ccc',}}>
               <img src={post.image} alt={post.title} style={{ height: '100%', width: '100%' }} />
             </div>
             <p>{post.content}</p>

@@ -3,13 +3,13 @@ import React from 'react';
 
 function SeccionPosts({}) {
   return (
-    <div className="post mt-5">
+    <div className="mt-5" style={{border: "1px solid white", padding: "20px", margin: "20px 0"}}>
       <div className="d-flex justify-content-between mb-3">
-        <span>usuario</span> {/* Nombre del usuario */}
-        <span>Fecha</span> {/*agregar la fecha real del post */}
+        <span>usuario</span> 
+        <span>Fecha</span> 
       </div>
       <h4 className="text-center">Título del post</h4>
-      <div className="image-container bg-white text-center mb-3" style={{ height: '300px' }}>
+      <div className="bg-white text-center mb-3" style={{ height: '300px', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px', backgroundColor: '#ccc',}}>
         <span>Imagen</span>
       </div>
       <div className="d-flex justify-content-between">
