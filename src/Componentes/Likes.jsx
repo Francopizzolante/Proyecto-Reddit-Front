@@ -1,4 +1,3 @@
-// src/Componentes/Likes.js
 import React from 'react';
 
 function Likes({ likedPosts }) {

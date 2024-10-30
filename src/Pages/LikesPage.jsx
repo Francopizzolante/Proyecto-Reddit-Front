@@ -1,4 +1,3 @@
-// src/pages/LikesPage.js
 import React from 'react';
 import BarraLateral from '../Componentes/BarraLateral';
 import BarraSuperior from '../Componentes/BarraSuperior';

@@ -1,4 +1,3 @@
-// src/Componentes/CrearPost.js
 import React, { useState } from 'react';
 
 function CrearPost() {

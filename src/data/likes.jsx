@@ -1,4 +1,3 @@
-// src/data/likes.js
 const likes = [
     {
       id: 1,

@@ -1,4 +1,3 @@
-// src/Componentes/SeccionPosts.js
 import React from 'react';
 
 function SeccionPosts({}) {

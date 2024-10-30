@@ -1,10 +1,9 @@
-// src/Componentes/Comments.js
 import React from 'react';
 
 function Comments({ userComments, userName }) {
   return (
     <div className="container mt-5">
-      <h2>Comentarios hechos por {userName}</h2> {/* Usamos el nombre del usuario logueado */}
+      <h2>Comentarios hechos por {userName}</h2> {/* nombre del usuario logueado */}
       {userComments.length === 0 ? (
         <p>No has hecho ningún comentario todavía.</p>
       ) : (

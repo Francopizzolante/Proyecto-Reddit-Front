@@ -1,4 +1,3 @@
-// src/Componentes/Posts.js
 import React from 'react';
 
 function Posts({ userPosts, userName }) {

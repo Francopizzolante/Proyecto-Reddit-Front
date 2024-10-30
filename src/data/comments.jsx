@@ -1,4 +1,3 @@
-// src/data/comments.js
 const comments = [
     {
       id: 1,

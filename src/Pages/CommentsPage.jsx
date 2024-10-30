@@ -1,4 +1,3 @@
-// src/pages/CommentsPage.js
 import React from 'react';
 import BarraLateral from '../Componentes/BarraLateral';
 import BarraSuperior from '../Componentes/BarraSuperior';

@@ -1,4 +1,3 @@
-// src/data/posts.js
 const posts = [
     {
       id: 1,

@@ -1,4 +1,3 @@
-// src/Componentes/BarraSuperior.js
 import React from 'react';
 
 function BarraSuperior({ logout }) {
