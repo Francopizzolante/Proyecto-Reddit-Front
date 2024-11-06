@@ -1,7 +1,8 @@
 import React from 'react';
 import BarraLateral from '../Componentes/BarraLateral';
 import BarraSuperior from '../Componentes/BarraSuperior';
-import SeccionPosts from '../Componentes/SeccionPosts';
+import PostList from '../Componentes/PostList';
+import posts from '../data/posts';
 
 function Home({ user, logout }) {
   return (
@@ -16,11 +17,11 @@ function Home({ user, logout }) {
           <BarraSuperior logout={logout} />
           
           {/* Sección de posts */}
-          <SeccionPosts user={user} />
+          <PostList posts={posts} filterType="all" />
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default Home;

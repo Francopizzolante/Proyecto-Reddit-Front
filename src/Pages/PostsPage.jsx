@@ -1,7 +1,7 @@
 import React from 'react';
 import BarraLateral from '../Componentes/BarraLateral';
 import BarraSuperior from '../Componentes/BarraSuperior';
-import Posts from '../Componentes/Posts';
+import PostList from '../Componentes/PostList';
 
 function PostsPage({ user, logout, userPosts }) {
   return (
@@ -16,7 +16,7 @@ function PostsPage({ user, logout, userPosts }) {
           <BarraSuperior logout={logout} />
 
           {/* Lista de posts creados por el usuario */}
-          <Posts userPosts={userPosts} userName={user.name}/>
+          <PostList posts={userPosts} filterType="user" userId={user.name} />
         </div>
       </div>
     </div>

@@ -1,9 +1,10 @@
 import React from 'react';
 import BarraLateral from '../Componentes/BarraLateral';
 import BarraSuperior from '../Componentes/BarraSuperior';
-import Likes from '../Componentes/Likes';
+import PostList from '../Componentes/PostList';
+import posts from '../data/posts';
 
-function LikesPage({ user, logout, likedPosts }) {
+function LikesPage({ user, logout}) {
   return (
     <div className="container-fluid vh-100">
       <div className="row h-100">
@@ -16,7 +17,7 @@ function LikesPage({ user, logout, likedPosts }) {
           <BarraSuperior logout={logout} />
 
           {/* Lista de posts a los que se les ha dado like */}
-          <Likes likedPosts={likedPosts} />
+          <PostList posts={posts} filterType="liked" />
         </div>
       </div>
     </div>
