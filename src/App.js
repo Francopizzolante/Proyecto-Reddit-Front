@@ -15,9 +15,10 @@ function App() {
   const { loginWithRedirect, isAuthenticated, logout, user } = useAuth0();
 
   // Estado con todos los posts, incluyendo likes y autor
-  const [userPosts, setUserPosts] = useState(posts);
-  const [userComments, setUserComments] = useState(comments);
+  const [userPosts] = useState(posts);
+  const [userComments] = useState(comments);
 
+  // Si el usuario no está autenticado, muestra la página de inicio con opción de login
   if (!isAuthenticated) {
     return <Inicio onLoginClick={loginWithRedirect} />;
   }
@@ -26,18 +27,14 @@ function App() {
   const likedPosts = userPosts.filter(post => post.isLiked);
   const postsByUser = userPosts.filter(post => post.authorId === user.name);
 
-  console.log("User Name from Auth0:", user.name);
-  console.log("Posts by user:", postsByUser);
-
-
   return (
     <Router>
       <Routes>
         <Route path="/crear-post" element={<CrearPostPage user={user} logout={logout} />} />
-        <Route path="/likes" element={<LikesPage user={user} logout={logout} likedPosts={likedPosts} />} />
-        <Route path="/posts" element={<PostsPage user={user} logout={logout} userPosts={postsByUser} />} />
+        <Route path="/likes" element={<LikesPage user={user} logout={logout} likedPosts={likedPosts} userComments={userComments} />} />
+        <Route path="/posts" element={<PostsPage user={user} logout={logout} userPosts={postsByUser} userComments={userComments} />} />
         <Route path="/comments" element={<CommentsPage user={user} logout={logout} userComments={userComments} />} />
-        <Route path="/" element={<Home user={user} logout={logout} allPosts={userPosts} />} />
+        <Route path="/" element={<Home user={user} logout={logout} allPosts={userPosts} userComments={userComments} />} />
       </Routes>
     </Router>
   );

@@ -1,13 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FaHeart } from 'react-icons/fa';
 
-function PostList({ posts, filterType, userId }) {
+function PostList({ posts, filterType, userId, comments }) {
+  // Estado para gestionar los "likes" en los posts
   const [likedPosts, setLikedPosts] = useState(
     posts.reduce((acc, post) => ({ ...acc, [post.id]: { liked: post.isLiked || false, likesCount: post.likesCount || 0 } }), {})
   );
 
+  // Estado para gestionar la visibilidad de los comentarios
+  const [commentsVisibility, setCommentsVisibility] = useState({}); 
+
+  // Ordena los posts por fecha en orden descendente
   const sortedPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
 
+  // Filtra los posts según el tipo de filtro seleccionado
   const filteredPosts = sortedPosts.filter(post => {
     switch (filterType) {
       case 'all':
@@ -21,6 +27,7 @@ function PostList({ posts, filterType, userId }) {
     }
   });
 
+  // Maneja el cambio de "like" en un post específico
   const handleLike = (postId) => {
     setLikedPosts((prevLikedPosts) => {
       const isLiked = prevLikedPosts[postId].liked;
@@ -31,6 +38,19 @@ function PostList({ posts, filterType, userId }) {
         [postId]: { liked: !isLiked, likesCount: newLikesCount },
       };
     });
+  };
+
+  // Función para alternar la visibilidad de los comentarios de un post
+  const toggleComments = (postId) => {
+    setCommentsVisibility((prevVisibility) => ({
+      ...prevVisibility,
+      [postId]: !prevVisibility[postId]
+    }));
+  };
+
+  // Función para obtener los comentarios específicos de un post
+  const getCommentsForPost = (postId) => {
+    return comments.filter(comment => comment.postId === postId);
   };
 
   return (
@@ -72,8 +92,28 @@ function PostList({ posts, filterType, userId }) {
                 size={24}
               />
             </div>
-            <button className="btn btn-light">Comments</button>
+
+            {/* Botón para mostrar/ocultar comentarios */}
+            <button className="btn btn-light" onClick={() => toggleComments(post.id)}>
+              {commentsVisibility[post.id] ? "Ocultar Comentarios" : "Mostrar Comentarios"}
+            </button>
           </div>
+
+          {/* Sección de comentarios */}
+          {commentsVisibility[post.id] && (
+            <div className="comments-section mt-3">
+              <h5>Comentarios:</h5>
+              {getCommentsForPost(post.id).map(comment => (
+                <div key={comment.id} className="comment mt-2 p-2 border border-secondary">
+                  <div className="d-flex justify-content-between">
+                    <span className="fw-bold">{comment.user}</span>
+                    <span>{comment.date}</span>
+                  </div>
+                  <p className="mt-2">{comment.content}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       ))}
     </div>

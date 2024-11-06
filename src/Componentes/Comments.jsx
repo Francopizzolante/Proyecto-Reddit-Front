@@ -1,22 +1,27 @@
 import React from 'react';
 
-function Comments({ userComments, userName }) {
+function Comments({ userComments, userPosts }) {
+
+  // Función para obtener el título del post a partir del postId
+  const getPostTitle = (postId) => {
+    const post = userPosts.find(p => p.id === postId);
+    return post ? post.title : "Título no encontrado";
+  };
+
   return (
     <div className="container mt-5">
-      <h2>Comentarios hechos por {userName}</h2> {/* nombre del usuario logueado */}
-      {userComments.length === 0 ? (
-        <p>No has hecho ningún comentario todavía.</p>
-      ) : (
-        userComments.map((comment, index) => (
+
+      {/* Mapea y renderiza cada comentario del usuario */}
+      {userComments.map((comment, index) => (
           <div key={index} className="comment mt-4 p-3 border border-light">
             <div className="d-flex justify-content-between">
-              <span>{comment.postTitle}</span> {/* Título del post al que pertenece el comentario */}
-              <span>{comment.date}</span>
+              <span>{getPostTitle(comment.postId)}</span> {/* Título del post obtenido con postId */}
+              <span>{comment.date}</span> {/* Fecha del comentario */}
             </div>
             <p className="mt-2">{comment.content}</p> {/* Contenido del comentario */}
           </div>
         ))
-      )}
+      }
     </div>
   );
 }

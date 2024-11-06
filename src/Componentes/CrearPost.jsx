@@ -1,36 +1,41 @@
 import React, { useState } from 'react';
 
 function CrearPost() {
-  const [titulo, setTitulo] = useState('');
+  const [titulo, setTitulo] = useState(''); // Estado para el título del post
   const [descripcion, setDescripcion] = useState(''); // Cambiado a descripción
   const [imagen, setImagen] = useState(null); // Estado para la imagen
   const [imagenPreview, setImagenPreview] = useState(null); // Estado para la vista previa de la imagen
 
+  // Maneja el envío del formulario para crear un nuevo post
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Validación: Verifica si se ha subido una imagen
     if (!imagen) {
       alert('Por favor, sube una imagen para el post.');
       return;
     }
 
-    console.log('Post creado:', { titulo, descripcion, imagen });
+    // Reinicia los campos del formulario y la vista previa
     setTitulo('');
     setDescripcion('');
     setImagen(null);
     setImagenPreview(null); // Limpiar la vista previa después de crear el post
   };
 
+  // Maneja el cambio de la imagen y genera la vista previa
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImagen(file);
-    setImagenPreview(URL.createObjectURL(file)); // Mostrar la vista previa
+    setImagenPreview(URL.createObjectURL(file)); // Genera la URL de la vista previa
   };
 
   return (
     <div className="container mt-5">
       <h2>Crear un nuevo post</h2>
       <form onSubmit={handleSubmit}>
+
+        {/* Campo para el título del post */}
         <div className="form-group">
           <label htmlFor="titulo">Título del post</label>
           <input
@@ -43,6 +48,7 @@ function CrearPost() {
           />
         </div>
 
+        {/* Campo para la subida de imagen */}
         <div className="form-group">
           <label htmlFor="imagen">Subir imagen</label>
           <input
@@ -55,6 +61,7 @@ function CrearPost() {
           />
         </div>
 
+        {/* Vista previa de la imagen seleccionada */}
         {imagenPreview && (
           <div className="mt-3">
             <h5>Vista previa de la imagen:</h5>
@@ -62,6 +69,7 @@ function CrearPost() {
           </div>
         )}
 
+        {/* Campo para la descripción del post */}
         <div className="form-group">
           <label htmlFor="descripcion">Descripción del post</label>
           <textarea
@@ -74,9 +82,8 @@ function CrearPost() {
           ></textarea>
         </div>
 
-        <button type="submit" className="btn btn-primary mt-3">
-          Crear post
-        </button>
+        {/* Botón para enviar el formulario y crear el post */}
+        <button type="submit" className="btn btn-primary mt-3"> Crear post </button>
       </form>
     </div>
   );

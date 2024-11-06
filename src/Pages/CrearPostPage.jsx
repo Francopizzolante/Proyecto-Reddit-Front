@@ -7,11 +7,13 @@ function CrearPostPage({ user, logout }) {
   return (
     <div className="container-fluid vh-100">
       <div className="row h-100">
+        
         {/* Barra lateral */}
         <BarraLateral user={user} />
 
         {/* Contenido principal */}
         <div className="col-10 bg-black text-white">
+
           {/* Barra superior */}
           <BarraSuperior logout={logout} />
 
