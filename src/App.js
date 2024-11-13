@@ -30,7 +30,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/crear-post" element={<CrearPostPage user={user} logout={logout} />} />
+        <Route path="/crear-post" element={<CrearPostPage/>} />
         <Route path="/likes" element={<LikesPage user={user} logout={logout} likedPosts={likedPosts} userComments={userComments} />} />
         <Route path="/posts" element={<PostsPage user={user} logout={logout} userPosts={postsByUser} userComments={userComments} />} />
         <Route path="/comments" element={<CommentsPage user={user} logout={logout} userComments={userComments} />} />

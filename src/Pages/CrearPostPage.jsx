@@ -2,8 +2,12 @@ import React from 'react';
 import BarraLateral from '../Componentes/BarraLateral';
 import BarraSuperior from '../Componentes/BarraSuperior';
 import CrearPost from '../Componentes/CrearPost';
+import { useAuth0 } from '@auth0/auth0-react';
 
-function CrearPostPage({ user, logout }) {
+function CrearPostPage() {
+
+  const { logout, user } = useAuth0();
+
   return (
     <div className="container-fluid vh-100">
       <div className="row h-100">
@@ -18,7 +22,7 @@ function CrearPostPage({ user, logout }) {
           <BarraSuperior logout={logout} />
 
           {/* Formulario de creación de post */}
-          <CrearPost />
+          <CrearPost  />
         </div>
       </div>
     </div>

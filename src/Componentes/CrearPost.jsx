@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
+import axios from 'axios'; // Importa Axios
+import { useAuth0 } from '@auth0/auth0-react';
 
 function CrearPost() {
-  const [titulo, setTitulo] = useState(''); // Estado para el título del post
-  const [descripcion, setDescripcion] = useState(''); // Cambiado a descripción
-  const [imagen, setImagen] = useState(null); // Estado para la imagen
-  const [imagenPreview, setImagenPreview] = useState(null); // Estado para la vista previa de la imagen
+  const [titulo, setTitulo] = useState('');
+  const [descripcion, setDescripcion] = useState('');
+  const [imagen, setImagen] = useState(null);
+  const [imagenPreview, setImagenPreview] = useState(null);
 
+  const { logout, user } = useAuth0();
   // Maneja el envío del formulario para crear un nuevo post
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validación: Verifica si se ha subido una imagen
@@ -15,19 +18,42 @@ function CrearPost() {
       alert('Por favor, sube una imagen para el post.');
       return;
     }
+    console.log(user)
 
-    // Reinicia los campos del formulario y la vista previa
-    setTitulo('');
-    setDescripcion('');
-    setImagen(null);
-    setImagenPreview(null); // Limpiar la vista previa después de crear el post
+    // Crea un objeto para enviar los datos y la imagen al backend
+    const data = {
+      user: user.name,
+      titulo: titulo,
+      descripcion: descripcion
+    }
+
+    try {
+      // Envía los datos al backend
+      const response = await axios.post('http://localhost:3000/api/posts', data, {
+        header:{
+          'Content-Type':'application/json'
+        }
+      })
+
+      alert('Post creado con éxito');
+      console.log(response.data);
+
+      // Reinicia los campos del formulario y la vista previa
+      setTitulo('');
+      setDescripcion('');
+      setImagen(null);
+      setImagenPreview(null);
+    } catch (error) {
+      console.error('Error creando el post:', error);
+      alert('Ocurrió un error al crear el post. Inténtalo nuevamente.');
+    }
   };
 
   // Maneja el cambio de la imagen y genera la vista previa
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImagen(file);
-    setImagenPreview(URL.createObjectURL(file)); // Genera la URL de la vista previa
+    setImagenPreview(URL.createObjectURL(file));
   };
 
   return (
