@@ -1,6 +1,10 @@
 import React from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 
-function BarraSuperior({ logout }) {
+function BarraSuperior() {
+
+  const { logout } = useAuth0();
+
   return (
     <div className="d-flex justify-content-between align-items-center p-3 bg-dark text-white">
 

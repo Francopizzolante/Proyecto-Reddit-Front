@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 
 // Componente BarraLateral: Renderiza una barra lateral fija con la foto, nombre del usuario y enlaces de navegación.
-function BarraLateral({ user }) {
+function BarraLateral() {
+
+  const { user } = useAuth0();
+
   return (
     <div className="col-2 bg-dark text-white" style={{ height: 'auto', overflow: 'hidden' }}>
       <div

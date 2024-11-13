@@ -12,7 +12,7 @@ import comments from './data/comments';
 import './App.css';
 
 function App() {
-  const { loginWithRedirect, isAuthenticated, logout, user } = useAuth0();
+  const { loginWithRedirect, isAuthenticated, user } = useAuth0();
 
   // Estado con todos los posts, incluyendo likes y autor
   const [userPosts] = useState(posts);
@@ -31,10 +31,10 @@ function App() {
     <Router>
       <Routes>
         <Route path="/crear-post" element={<CrearPostPage/>} />
-        <Route path="/likes" element={<LikesPage user={user} logout={logout} likedPosts={likedPosts} userComments={userComments} />} />
-        <Route path="/posts" element={<PostsPage user={user} logout={logout} userPosts={postsByUser} userComments={userComments} />} />
-        <Route path="/comments" element={<CommentsPage user={user} logout={logout} userComments={userComments} />} />
-        <Route path="/" element={<Home user={user} logout={logout} allPosts={userPosts} userComments={userComments} />} />
+        <Route path="/likes" element={<LikesPage likedPosts={likedPosts} userComments={userComments} />} />
+        <Route path="/posts" element={<PostsPage userPosts={postsByUser} userComments={userComments} />} />
+        <Route path="/comments" element={<CommentsPage userComments={userComments} />} />
+        <Route path="/" element={<Home allPosts={userPosts} userComments={userComments} />} />
       </Routes>
     </Router>
   );

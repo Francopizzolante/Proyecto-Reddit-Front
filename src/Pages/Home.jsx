@@ -1,29 +1,14 @@
 import React from 'react';
-import BarraLateral from '../Componentes/BarraLateral';
-import BarraSuperior from '../Componentes/BarraSuperior';
+import PageLayout from './PageLayout';
 import PostList from '../Componentes/PostList';
 import posts from '../data/posts';
 
-function Home({ user, logout, userComments }) {
+function Home({ userComments }) {
   return (
-    <div className="container-fluid vh-100">
-      <div className="row h-100">
-        
-        {/* Barra lateral */}
-        <BarraLateral user={user} />
-        
-        {/* Contenido principal */}
-        <div className="col-10 bg-black text-white">
-          
-          {/* Barra superior */}
-          <BarraSuperior logout={logout} />
-          
-          {/* Sección de posts */}
-          <PostList posts={posts} comments={userComments} filterType="all" />
-        </div>
-      </div>
-    </div>
-  )
+    <PageLayout title="Bienvenido, {user}">
+      <PostList posts={posts} comments={userComments} filterType="all" />
+    </PageLayout>
+  );
 }
 
 export default Home;
