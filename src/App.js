@@ -8,7 +8,6 @@ import LikesPage from './Pages/LikesPage';
 import PostsPage from './Pages/PostsPage';
 import CommentsPage from './Pages/CommentsPage';
 import posts from './data/posts';
-import comments from './data/comments';
 import './App.css';
 
 function App() {
@@ -16,7 +15,6 @@ function App() {
 
   // Estado con todos los posts, incluyendo likes y autor
   const [userPosts] = useState(posts);
-  const [userComments] = useState(comments);
 
   // Si el usuario no está autenticado, muestra la página de inicio con opción de login
   if (!isAuthenticated) {
@@ -31,10 +29,10 @@ function App() {
     <Router>
       <Routes>
         <Route path="/crear-post" element={<CrearPostPage/>} />
-        <Route path="/likes" element={<LikesPage likedPosts={likedPosts} userComments={userComments} />} />
-        <Route path="/posts" element={<PostsPage userPosts={postsByUser} userComments={userComments} />} />
-        <Route path="/comments" element={<CommentsPage userComments={userComments} />} />
-        <Route path="/" element={<Home allPosts={userPosts} userComments={userComments} />} />
+        <Route path="/likes" element={<LikesPage likedPosts={likedPosts}/>} />
+        <Route path="/posts" element={<PostsPage userPosts={postsByUser}/>} />
+        <Route path="/comments" element={<CommentsPage/>} />
+        <Route path="/" element={<Home allPosts={userPosts}/>} />
       </Routes>
     </Router>
   );

@@ -41,5 +41,17 @@ export const getCommentsByPostId = async (postId) => {
     }
 };
 
+// Obtener el título de un post por su ID
+export const getPostTitleById = async (postId) => {
+    try {
+        const response = await axiosClient.get(`/posts/title/${postId}`);
+        return response.data.titulo; // Devuelve solo el título
+    } catch (error) {
+        console.error(`Error al obtener el título para el post ${postId}:`, error);
+        return 'Título no disponible'; // Mensaje de error por defecto
+    }
+};
+
+
 // Exportar la instancia de Axios y las funciones
 export default axiosClient;
