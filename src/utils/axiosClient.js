@@ -19,5 +19,27 @@ export const createPost = async (data) => {
     }
 };
 
+// Función para obtener los comentarios de un usuario
+export const getCommentsByUser = async (user) => {
+    try {
+        const response = await axiosClient.get(`/comments/user/${user}`); // Solicitud GET al backend
+        return response.data; // Devuelve los comentarios del usuario
+    } catch (error) {
+        console.error('Error obteniendo los comentarios del usuario:', error);
+        throw error; // Lanza el error para manejarlo en el componente
+    }
+};
+
+// Obtener comentarios específicos de un post
+export const getCommentsByPostId = async (postId) => {
+    try {
+        const response = await axiosClient.get(`/comments/post/${postId}`); // Asegúrate de que la ruta coincida
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener comentarios por postId:', error);
+        throw error;
+    }
+};
+
 // Exportar la instancia de Axios y las funciones
 export default axiosClient;
