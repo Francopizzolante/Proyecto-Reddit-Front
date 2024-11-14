@@ -5,7 +5,7 @@ import CrearPost from '../Componentes/CrearPost';
 function CrearPostPage() {
   return (
     <PageLayout title="Crear un nuevo post">
-      <CrearPost />
+      <CrearPost/>
     </PageLayout>
   );
 }

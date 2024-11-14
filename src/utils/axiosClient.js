@@ -52,6 +52,39 @@ export const getPostTitleById = async (postId) => {
     }
 };
 
+// Obtener todos los posts
+export const getAllPosts = async () => {
+    try {
+        const response = await axiosClient.get('/posts');
+        return response.data; // Devuelve los posts
+    } catch (error) {
+        console.error('Error al obtener todos los posts:', error);
+        throw error;
+    }
+};
+
+// Obtener posts creados por un usuario
+export const getPostsByUser = async (user) => {
+    try {
+        const response = await axiosClient.get(`/posts/user/${user}`);
+        return response.data; // Devuelve los posts creados por el usuario
+    } catch (error) {
+        console.error(`Error al obtener posts del usuario ${user}:`, error);
+        throw error;
+    }
+};
+
+// Obtener posts "likeados" por un usuario
+export const getPostsLikedByUser = async (user) => {
+    try {
+        const response = await axiosClient.get(`/posts/liked/${user}`);
+        return response.data; // Devuelve los posts likeados
+    } catch (error) {
+        console.error(`Error al obtener posts likeados por el usuario ${user}:`, error);
+        throw error;
+    }
+};
+
 
 // Exportar la instancia de Axios y las funciones
 export default axiosClient;

@@ -3,10 +3,10 @@ import PageLayout from './PageLayout';
 import PostList from '../Componentes/PostList';
 import posts from '../data/posts';
 
-function Home({ userComments }) {
+function Home() {
   return (
     <PageLayout title="Bienvenido, {user}">
-      <PostList posts={posts} comments={userComments} filterType="all" />
+      <PostList posts={posts} filterType="all" />
     </PageLayout>
   );
 }
