@@ -39,7 +39,7 @@ function PostList({ fetchType }) {
                 );
             } catch (err) {
                 console.error('Error al cargar los posts:', err);
-                setError('Error al cargar los posts. Intenta nuevamente.');
+                setError('No hay posts para mostrar');
             }
         };
 
@@ -122,7 +122,7 @@ function PostList({ fetchType }) {
                         />
                     </div>
 
-                    <p>{post.content}</p>
+                    <p>{post.descripcion}</p>
 
                     {/* Sección de likes y botón para comentarios */}
                     <div className="d-flex justify-content-between align-items-center">

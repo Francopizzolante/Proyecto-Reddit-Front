@@ -10,7 +10,7 @@ import CommentsPage from './Pages/CommentsPage';
 import './App.css';
 
 function App() {
-  const { loginWithRedirect, isAuthenticated, user } = useAuth0();
+  const { loginWithRedirect, isAuthenticated} = useAuth0();
 
   // Si el usuario no está autenticado, muestra la página de inicio con opción de login
   if (!isAuthenticated) {
