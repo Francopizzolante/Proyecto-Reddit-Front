@@ -1,50 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaHeart } from 'react-icons/fa';
-import { getCommentsByPostId } from '../utils/axiosClient'; // Importa la función para obtener comentarios desde el backend
+import { getAllPosts, getPostsByUser, getPostsLikedByUser, getCommentsByPostId } from '../utils/axiosClient';
+import { useAuth0 } from '@auth0/auth0-react';
 
-function PostList({ posts, filterType, userId }) {
-    // Estado para gestionar los "likes" de los posts
-    const [likedPosts, setLikedPosts] = useState(
-        posts.reduce((acc, post) => ({
-            ...acc,
-            [post.id]: { liked: post.isLiked || false, likesCount: post.likesCount || 0 }, // Inicializa el estado con los likes de los posts
-        }), {})
-    );
+function PostList({ fetchType }) {
 
-    // Estado para gestionar la visibilidad de los comentarios de cada post
+    const { user } = useAuth0(); // Obtiene el usuario desde Auth0
+    const [posts, setPosts] = useState([]); // Estado para los posts cargados desde el backend
+    const [likedPosts, setLikedPosts] = useState({});
     const [commentsVisibility, setCommentsVisibility] = useState({});
-
-    // Estado para almacenar los comentarios cargados desde el backend por postId
     const [commentsByPost, setCommentsByPost] = useState({});
+    const [error, setError] = useState(null);
 
-    // Ordena los posts por fecha en orden descendente
-    const sortedPosts = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Cargar posts según el tipo de consulta
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                let fetchedPosts;
+                switch (fetchType) {
+                    case 'all': // Todos los posts (para Home)
+                        fetchedPosts = await getAllPosts();
+                        break;
+                    case 'user': // Posts del usuario actual (para PostsPage)
+                        fetchedPosts = await getPostsByUser(user.name);
+                        break;
+                    case 'liked': // Posts "likeados" por el usuario (para LikesPage)
+                        fetchedPosts = await getPostsLikedByUser(user.name);
+                        break;
+                    default:
+                        throw new Error('Tipo de consulta inválido');
+                }
+                setPosts(fetchedPosts); // Guarda los posts en el estado
+                setLikedPosts(
+                    fetchedPosts.reduce((acc, post) => ({
+                        ...acc,
+                        [post.id]: { liked: post.isLiked || false, likesCount: post.likesCount || 0 },
+                    }), {})
+                );
+            } catch (err) {
+                console.error('Error al cargar los posts:', err);
+                setError('Error al cargar los posts. Intenta nuevamente.');
+            }
+        };
 
-    // Filtra los posts según el tipo de filtro seleccionado (todos, del usuario o con like)
-    const filteredPosts = sortedPosts.filter((post) => {
-        switch (filterType) {
-            case 'all': // Todos los posts
-                return true;
-            case 'user': // Posts creados por el usuario actual
-                return post.user === userId;
-            case 'liked': // Posts a los que el usuario dio like
-                return likedPosts[post.id]?.liked;
-            default: // Si no coincide con ningún filtro, no muestra nada
-                return false;
-        }
-    });
+        fetchPosts();
+    }, [fetchType, user.name]);
 
     // Maneja el evento de "like" en un post específico
     const handleLike = (postId) => {
         setLikedPosts((prevLikedPosts) => {
-            const isLiked = prevLikedPosts[postId].liked; // Comprueba si ya tiene un like
+            const isLiked = prevLikedPosts[postId].liked;
             const newLikesCount = isLiked 
-                ? prevLikedPosts[postId].likesCount - 1 // Si tenía like, lo reduce
-                : prevLikedPosts[postId].likesCount + 1; // Si no tenía like, lo incrementa
+                ? prevLikedPosts[postId].likesCount - 1 
+                : prevLikedPosts[postId].likesCount + 1;
 
             return {
                 ...prevLikedPosts,
-                [postId]: { liked: !isLiked, likesCount: newLikesCount }, // Actualiza el estado con el nuevo valor
+                [postId]: { liked: !isLiked, likesCount: newLikesCount },
             };
         });
     };
@@ -52,13 +64,13 @@ function PostList({ posts, filterType, userId }) {
     // Llama al backend para cargar los comentarios de un post específico
     const fetchCommentsForPost = async (postId) => {
         try {
-            const comments = await getCommentsByPostId(postId); // Llama al endpoint del backend
+            const comments = await getCommentsByPostId(postId);
             setCommentsByPost((prev) => ({
                 ...prev,
-                [postId]: comments, // Almacena los comentarios obtenidos en el estado, indexados por postId
+                [postId]: comments,
             }));
         } catch (error) {
-            console.error(`Error al cargar los comentarios para el post ${postId}:`, error); // Maneja errores de la solicitud
+            console.error(`Error al cargar los comentarios para el post ${postId}:`, error);
         }
     };
 
@@ -66,20 +78,22 @@ function PostList({ posts, filterType, userId }) {
     const toggleComments = (postId) => {
         setCommentsVisibility((prevVisibility) => ({
             ...prevVisibility,
-            [postId]: !prevVisibility[postId], // Cambia el estado de visibilidad del post específico
+            [postId]: !prevVisibility[postId],
         }));
 
-        if (!commentsVisibility[postId]) { // Si los comentarios no están visibles, los carga
+        if (!commentsVisibility[postId]) {
             fetchCommentsForPost(postId);
         }
     };
 
+    // Renderizado condicional en caso de error
+    if (error) return <div>{error}</div>;
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            {/* Mapea y renderiza los posts filtrados */}
-            {filteredPosts.map((post) => (
+            {posts.map((post) => (
                 <div
-                    key={post.id} // Clave única para cada post
+                    key={post.id}
                     style={{
                         border: "1px solid white",
                         padding: "20px",
@@ -90,15 +104,15 @@ function PostList({ posts, filterType, userId }) {
                 >
                     {/* Información del usuario y la fecha del post */}
                     <div className="d-flex justify-content-between mb-3">
-                        <span>{post.user}</span> {/* Nombre del usuario que creó el post */}
-                        <span>{post.date}</span> {/* Fecha de creación del post */}
+                        <span>{post.user}</span>
+                        <span>{new Date(post.created_at).toLocaleDateString()}</span>
                     </div>
-                    <h4 className="text-center">{post.title}</h4> {/* Título del post */}
+                    <h4 className="text-center">{post.title}</h4>
                     
                     {/* Imagen del post */}
                     <div className="text-center mb-3" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <img 
-                            src={post.image} 
+                            src={post.imagen} 
                             alt="post visual" 
                             style={{ 
                                 width: '300px',
@@ -108,20 +122,19 @@ function PostList({ posts, filterType, userId }) {
                         />
                     </div>
 
-                    <p>{post.content}</p> {/* Contenido del post */}
+                    <p>{post.content}</p>
 
                     {/* Sección de likes y botón para comentarios */}
                     <div className="d-flex justify-content-between align-items-center">
                         <div className="d-flex align-items-center">
-                            <span className="me-2">{likedPosts[post.id]?.likesCount}</span> {/* Cantidad de likes */}
+                            <span className="me-2">{likedPosts[post.id]?.likesCount}</span>
                             <FaHeart
-                                onClick={() => handleLike(post.id)} // Maneja el evento de "like"
-                                style={{ color: likedPosts[post.id]?.liked ? 'red' : 'gray', cursor: 'pointer' }} // Cambia el color según el estado de "like"
+                                onClick={() => handleLike(post.id)}
+                                style={{ color: likedPosts[post.id]?.liked ? 'red' : 'gray', cursor: 'pointer' }}
                                 size={24}
                             />
                         </div>
 
-                        {/* Botón para mostrar/ocultar comentarios */}
                         <button className="btn btn-light" onClick={() => toggleComments(post.id)}>
                             {commentsVisibility[post.id] ? "Ocultar Comentarios" : "Mostrar Comentarios"}
                         </button>
@@ -131,18 +144,18 @@ function PostList({ posts, filterType, userId }) {
                     {commentsVisibility[post.id] && (
                         <div className="comments-section mt-3">
                             <h5>Comentarios:</h5>
-                            {commentsByPost[post.id] ? ( // Verifica si ya se cargaron los comentarios
+                            {commentsByPost[post.id] ? (
                                 commentsByPost[post.id].map((comment) => (
                                     <div key={comment.id} className="comment mt-2 p-2 border border-secondary">
                                         <div className="d-flex justify-content-between">
-                                            <span className="fw-bold">{comment.user}</span> {/* Usuario del comentario */}
-                                            <span>{new Date(comment.created_at).toLocaleDateString()}</span> {/* Fecha del comentario */}
+                                            <span className="fw-bold">{comment.user}</span>
+                                            <span>{new Date(comment.created_at).toLocaleDateString()}</span>
                                         </div>
-                                        <p className="mt-2">{comment.content}</p> {/* Contenido del comentario */}
+                                        <p className="mt-2">{comment.content}</p>
                                     </div>
                                 ))
                             ) : (
-                                <p>No hay ningun comentario aun</p> // Mensaje si no hay comentarios cargados
+                                <p>No hay ningun comentario aun</p>
                             )}
                         </div>
                     )}

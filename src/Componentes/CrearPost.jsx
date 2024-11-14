@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { createPost } from '../utils/axiosClient'; // Importar la función desde axiosClient
+import { useAuth0 } from '@auth0/auth0-react';
 
 function CrearPost() {
+    const { user } = useAuth0();
     const [titulo, setTitulo] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [imagen, setImagen] = useState(null);
@@ -19,6 +21,7 @@ function CrearPost() {
         const formData = new FormData();
         formData.append('titulo', titulo);
         formData.append('descripcion', descripcion);
+        formData.append('user', user.name);
 
         try {
             // Llamar a la función `createPost` de axiosClient

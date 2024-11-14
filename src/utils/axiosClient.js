@@ -77,7 +77,7 @@ export const getPostsByUser = async (user) => {
 // Obtener posts "likeados" por un usuario
 export const getPostsLikedByUser = async (user) => {
     try {
-        const response = await axiosClient.get(`/posts/liked/${user}`);
+        const response = await axiosClient.get(`/posts/user/${user}/liked`);
         return response.data; // Devuelve los posts likeados
     } catch (error) {
         console.error(`Error al obtener posts likeados por el usuario ${user}:`, error);
