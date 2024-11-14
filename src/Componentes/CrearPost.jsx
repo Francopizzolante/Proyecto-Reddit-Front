@@ -22,6 +22,7 @@ function CrearPost() {
         formData.append('titulo', titulo);
         formData.append('descripcion', descripcion);
         formData.append('user', user.name);
+        formData.append('imagen', imagen); // Agregar la imagen
 
         try {
             // Llamar a la función `createPost` de axiosClient

@@ -107,12 +107,12 @@ function PostList({ fetchType }) {
                         <span>{post.user}</span>
                         <span>{new Date(post.created_at).toLocaleDateString()}</span>
                     </div>
-                    <h4 className="text-center">{post.title}</h4>
+                    <h4 className="text-center">{post.titulo}</h4>
                     
                     {/* Imagen del post */}
                     <div className="text-center mb-3" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <img 
-                            src={post.imagen} 
+                            src={`http://localhost:3000${post.imagen}`}
                             alt="post visual" 
                             style={{ 
                                 width: '300px',

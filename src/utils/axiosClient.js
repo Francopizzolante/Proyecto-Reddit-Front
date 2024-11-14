@@ -5,17 +5,18 @@ const axiosClient = axios.create({
     baseURL: 'http://localhost:3000/api', // Cambia esto según tu URL base del backend
     headers: {
         'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
     },
 });
 
 // Función para crear un nuevo post
 export const createPost = async (data) => {
     try {
-        const response = await axiosClient.post('/posts', data); // Realiza la solicitud POST
-        return response.data; // Devuelve los datos del post creado
+        const response = await axiosClient.post('/posts/create', data); // Endpoint correcto
+        return response.data;
     } catch (error) {
         console.error('Error creando el post:', error);
-        throw error; // Lanza el error para manejarlo en el componente
+        throw error;
     }
 };
 
