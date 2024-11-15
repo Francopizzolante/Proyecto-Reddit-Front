@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { FaHeart } from 'react-icons/fa';
-import { getAllPosts, getPostsByUser, getPostsLikedByUser, getCommentsByPostId } from '../utils/axiosClient';
+import { getAllPosts, getPostsByUser, getPostsLikedByUser, getCommentsByPostId, addLikeToPost, removeLikeFromPost } from '../utils/axiosClient';
 import { useAuth0 } from '@auth0/auth0-react';
 
 function PostList({ fetchType }) {
-
-    const { user } = useAuth0(); // Obtiene el usuario desde Auth0
-    const [posts, setPosts] = useState([]); // Estado para los posts cargados desde el backend
+    const { user } = useAuth0(); // Obtenemos el usuario desde Auth0
+    const [posts, setPosts] = useState([]); // Posts cargados desde el backend
     const [likedPosts, setLikedPosts] = useState({});
     const [commentsVisibility, setCommentsVisibility] = useState({});
     const [commentsByPost, setCommentsByPost] = useState({});
@@ -14,52 +13,81 @@ function PostList({ fetchType }) {
 
     // Cargar posts según el tipo de consulta
     useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                let fetchedPosts;
-                switch (fetchType) {
-                    case 'all': // Todos los posts (para Home)
-                        fetchedPosts = await getAllPosts();
-                        break;
-                    case 'user': // Posts del usuario actual (para PostsPage)
-                        fetchedPosts = await getPostsByUser(user.name);
-                        break;
-                    case 'liked': // Posts "likeados" por el usuario (para LikesPage)
-                        fetchedPosts = await getPostsLikedByUser(user.name);
-                        break;
-                    default:
-                        throw new Error('Tipo de consulta inválido');
-                }
-                setPosts(fetchedPosts); // Guarda los posts en el estado
-                setLikedPosts(
-                    fetchedPosts.reduce((acc, post) => ({
-                        ...acc,
-                        [post.id]: { liked: post.isLiked || false, likesCount: post.likesCount || 0 },
-                    }), {})
-                );
-            } catch (err) {
-                console.error('Error al cargar los posts:', err);
-                setError('No hay posts para mostrar');
-            }
-        };
-
-        fetchPosts();
-    }, [fetchType, user.name]);
+      const fetchPosts = async () => {
+          try {
+              let fetchedPosts;
+              switch (fetchType) {
+                  case 'all': // Todos los posts (para Home)
+                      fetchedPosts = await getAllPosts();
+                      break;
+                  case 'user': // Posts creados por el usuario actual (para PostsPage)
+                      fetchedPosts = await getPostsByUser(user.name);
+                      break;
+                  case 'liked': // Posts "likeados" por el usuario (para LikesPage)
+                      fetchedPosts = await getPostsLikedByUser(user.name);
+                      break;
+                  default:
+                      throw new Error('Tipo de consulta inválido');
+              }
+  
+              setPosts(fetchedPosts); // Guarda los posts en el estado
+  
+              // Inicializar estado de likes
+              setLikedPosts(
+                  fetchedPosts.reduce((acc, post) => ({
+                      ...acc,
+                      [post.id]: {
+                          liked: post.likedBy?.includes(user.name), // Verifica si el usuario actual ha dado like
+                          likesCount: post.likesCount || 0,
+                      },
+                  }), {})
+              );
+          } catch (err) {
+              console.error('Error al cargar los posts:', err);
+              setError('No hay posts para mostrar.');
+          }
+      };
+  
+      fetchPosts();
+  }, [fetchType, user.name]);
+  
 
     // Maneja el evento de "like" en un post específico
-    const handleLike = (postId) => {
-        setLikedPosts((prevLikedPosts) => {
-            const isLiked = prevLikedPosts[postId].liked;
-            const newLikesCount = isLiked 
-                ? prevLikedPosts[postId].likesCount - 1 
-                : prevLikedPosts[postId].likesCount + 1;
-
-            return {
-                ...prevLikedPosts,
-                [postId]: { liked: !isLiked, likesCount: newLikesCount },
-            };
-        });
-    };
+    const handleLike = async (postId) => {
+      try {
+          const isLiked = likedPosts[postId]?.liked;
+  
+          if (isLiked) {
+              // Quitar el like
+              const response = await removeLikeFromPost(postId, user.name);
+              setLikedPosts((prev) => ({
+                  ...prev,
+                  [postId]: {
+                      liked: false,
+                      likesCount: response.likesCount, // Actualiza el contador
+                  },
+              }));
+  
+              // Si estamos en la LikesPage, filtra el post deslikeado
+              if (fetchType === 'liked') {
+                  setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+              }
+          } else {
+              // Agregar el like
+              const response = await addLikeToPost(postId, user.name);
+              setLikedPosts((prev) => ({
+                  ...prev,
+                  [postId]: {
+                      liked: true,
+                      likesCount: response.likesCount, // Actualiza el contador
+                  },
+              }));
+          }
+      } catch (error) {
+          console.error('Error manejando el like:', error);
+      }
+  };
+  
 
     // Llama al backend para cargar los comentarios de un post específico
     const fetchCommentsForPost = async (postId) => {
@@ -108,17 +136,17 @@ function PostList({ fetchType }) {
                         <span>{new Date(post.created_at).toLocaleDateString()}</span>
                     </div>
                     <h4 className="text-center">{post.titulo}</h4>
-                    
+
                     {/* Imagen del post */}
-                    <div className="text-center mb-3" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <img 
+                    <div className="text-center mb-3">
+                        <img
                             src={`http://localhost:3000${post.imagen}`}
-                            alt="post visual" 
-                            style={{ 
+                            alt="Post visual"
+                            style={{
                                 width: '300px',
                                 height: '300px',
                                 objectFit: 'cover'
-                            }} 
+                            }}
                         />
                     </div>
 
@@ -155,7 +183,7 @@ function PostList({ fetchType }) {
                                     </div>
                                 ))
                             ) : (
-                                <p>No hay ningun comentario aun</p>
+                                <p>No hay ningún comentario aún.</p>
                             )}
                         </div>
                     )}

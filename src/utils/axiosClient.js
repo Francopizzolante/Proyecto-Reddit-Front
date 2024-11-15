@@ -86,6 +86,36 @@ export const getPostsLikedByUser = async (user) => {
     }
 };
 
+// Agregar un like a un post
+export const addLikeToPost = async (postId, user) => {
+    try {
+        const response = await axiosClient.post(`/posts/${postId}/like`, user, {
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error al agregar el like:', error);
+        throw error;
+    }
+};
+
+// Quitar un like de un post
+export const removeLikeFromPost = async (postId, user) => {
+    try {
+        const response = await axiosClient.delete(`/posts/${postId}/like`, {
+            data: user,
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error al quitar el like:', error);
+        throw error;
+    }
+};
 
 // Exportar la instancia de Axios y las funciones
 export default axiosClient;
