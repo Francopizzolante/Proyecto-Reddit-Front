@@ -90,9 +90,7 @@ export const getPostsLikedByUser = async (user) => {
 export const addLikeToPost = async (postId, user) => {
     try {
         const response = await axiosClient.post(`/posts/${postId}/like`, user, {
-            headers: {
-                'Content-Type': 'text/plain',
-            },
+            headers: { 'Content-Type': 'text/plain', },
         });
         return response.data;
     } catch (error) {
@@ -104,11 +102,8 @@ export const addLikeToPost = async (postId, user) => {
 // Quitar un like de un post
 export const removeLikeFromPost = async (postId, user) => {
     try {
-        const response = await axiosClient.delete(`/posts/${postId}/like`, {
-            data: user,
-            headers: {
-                'Content-Type': 'text/plain',
-            },
+        const response = await axiosClient.delete(`/posts/${postId}/like`, { data: user,
+            headers: {'Content-Type': 'text/plain', },
         });
         return response.data;
     } catch (error) {

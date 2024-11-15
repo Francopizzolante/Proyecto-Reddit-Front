@@ -1,50 +1,59 @@
 import React, { useState } from 'react';
-import { createPost } from '../utils/axiosClient'; // Importar la función desde axiosClient
+import { createPost } from '../utils/axiosClient';
 import { useAuth0 } from '@auth0/auth0-react';
 
 function CrearPost() {
     const { user } = useAuth0();
-    const [titulo, setTitulo] = useState('');
-    const [descripcion, setDescripcion] = useState('');
-    const [imagen, setImagen] = useState(null);
-    const [imagenPreview, setImagenPreview] = useState(null);
+    const [formData, setFormData] = useState({
+        titulo: '',
+        descripcion: '',
+        imagen: null,
+    });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (!imagen) {
-            alert('Por favor, sube una imagen para el post.');
-            return;
-        }
-
-        // Crear un objeto FormData para enviar los datos
-        const formData = new FormData();
-        formData.append('titulo', titulo);
-        formData.append('descripcion', descripcion);
-        formData.append('user', user.name);
-        formData.append('imagen', imagen); // Agregar la imagen
-
-        try {
-            // Llamar a la función `createPost` de axiosClient
-            const nuevoPost = await createPost(formData);
-            alert('Post creado con éxito');
-            console.log('Nuevo Post:', nuevoPost);
-
-            // Limpiar los campos del formulario
-            setTitulo('');
-            setDescripcion('');
-            setImagen(null);
-            setImagenPreview(null);
-        } catch (error) {
-            console.error('Error al crear el post:', error);
-            alert('Ocurrió un error al crear el post.');
-        }
+    const handleInputChange = (e) => {
+        const { id, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [id]: value,
+        }));
     };
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
-        setImagen(file);
-        setImagenPreview(URL.createObjectURL(file));
+        setFormData((prev) => ({
+            ...prev,
+            imagen: file,
+        }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!formData.imagen) {
+            alert('Por favor, sube una imagen para el post.');
+            return;
+        }
+
+        const postFormData = new FormData();
+        postFormData.append('titulo', formData.titulo);
+        postFormData.append('descripcion', formData.descripcion);
+        postFormData.append('user', user.name);
+        postFormData.append('imagen', formData.imagen);
+
+        try {
+            await createPost(postFormData);
+            alert('Post creado con éxito');
+
+            // Reiniciar el formulario
+            setFormData({
+                titulo: '',
+                descripcion: '',
+                imagen: null,
+            });
+        } catch (error) {
+            console.error('Error al crear el post:', error);
+            alert('Ocurrió un error al crear el post.');
+        }
     };
 
     return (
@@ -57,8 +66,8 @@ function CrearPost() {
                         type="text"
                         className="form-control"
                         id="titulo"
-                        value={titulo}
-                        onChange={(e) => setTitulo(e.target.value)}
+                        value={formData.titulo}
+                        onChange={handleInputChange}
                         required
                     />
                 </div>
@@ -75,10 +84,14 @@ function CrearPost() {
                     />
                 </div>
 
-                {imagenPreview && (
+                {formData.imagen && (
                     <div className="mt-3">
                         <h5>Vista previa de la imagen:</h5>
-                        <img src={imagenPreview} alt="Vista previa" style={{ maxHeight: '300px' }} />
+                        <img
+                            src={URL.createObjectURL(formData.imagen)}
+                            alt="Vista previa"
+                            style={{ maxHeight: '300px' }}
+                        />
                     </div>
                 )}
 
@@ -88,13 +101,13 @@ function CrearPost() {
                         className="form-control"
                         id="descripcion"
                         rows="5"
-                        value={descripcion}
-                        onChange={(e) => setDescripcion(e.target.value)}
+                        value={formData.descripcion}
+                        onChange={handleInputChange}
                         required
                     ></textarea>
                 </div>
 
-                <button type="submit" className="btn btn-primary mt-3"> Crear post </button>
+                <button type="submit" className="btn btn-primary mt-3">Crear post</button>
             </form>
         </div>
     );
