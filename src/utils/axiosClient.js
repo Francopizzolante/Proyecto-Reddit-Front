@@ -139,5 +139,17 @@ export const addCommentToPost = async (postId, user, content) => {
     }
 };
 
+// Función para eliminar un comentario
+export const deleteCommentById = async (commentId) => {
+    try {
+        const response = await axiosClient.delete(`/comments/${commentId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al eliminar comentario:', error.response?.data || error.message);
+        throw error;
+    }
+};
+
+
 // Exportar la instancia de Axios y las funciones
 export default axiosClient;
