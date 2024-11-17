@@ -128,6 +128,16 @@ export const removeLikeFromPost = async (postId, user) => {
     }
 };
 
+// Función para agregar un comentario
+export const addCommentToPost = async (postId, user, content) => {
+    try {
+        const response = await axiosClient.post('/comments', { postId, user, content },{headers: {'Content-Type': 'application/json'}});
+        return response.data; // Devuelve el comentario creado
+    } catch (error) {
+        console.error('Error al agregar comentario:', error.response?.data || error.message);
+        throw error;
+    }
+};
 
 // Exportar la instancia de Axios y las funciones
 export default axiosClient;

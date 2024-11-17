@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { FaHeart } from 'react-icons/fa';
-import {getAllPosts, getPostsByUser, getPostsLikedByUser, getCommentsByPostId, addLikeToPost, removeLikeFromPost,} from '../utils/axiosClient';
+import {
+    getAllPosts,
+    getPostsByUser,
+    getPostsLikedByUser,
+    getCommentsByPostId,
+    addCommentToPost, // Función para crear un comentario
+    addLikeToPost,
+    removeLikeFromPost,
+} from '../utils/axiosClient';
 import { useAuth0 } from '@auth0/auth0-react';
 
 function PostList({ fetchType }) {
     const { user } = useAuth0();
-    const [posts, setPosts] = useState([]); // Estado para los posts cargados
-    const [commentsData, setCommentsData] = useState({}); // Combina visibilidad y contenido de comentarios
+    const [posts, setPosts] = useState([]);
+    const [commentsData, setCommentsData] = useState({});
     const [error, setError] = useState(null);
+    const [newComment, setNewComment] = useState(""); // Estado para el nuevo comentario
 
-    // Cargar posts según el tipo de consulta
     useEffect(() => {
         const fetchPosts = async () => {
             try {
@@ -36,46 +44,37 @@ function PostList({ fetchType }) {
         fetchPosts();
     }, [fetchType, user.name]);
 
-    // Maneja el evento de "like"
     const handleLike = async (postId) => {
         try {
             const postIndex = posts.findIndex((post) => post.id === postId);
             if (postIndex === -1) return;
 
             const post = posts[postIndex];
-
-            // Convertir likedBy a un array si es un string
             const likedByArray = (post.likedBy || '').split(',').map((name) => name.trim()).filter(Boolean);
             const isLiked = likedByArray.includes(user.name);
 
-            // Lógica de like/unlike
             let updatedPost;
             if (isLiked) {
                 await removeLikeFromPost(postId, user.name);
                 updatedPost = {
                     ...post,
-                    likedBy: likedByArray.filter((u) => u !== user.name).join(', '), // Eliminar usuario y convertir de nuevo a string
+                    likedBy: likedByArray.filter((u) => u !== user.name).join(', '),
                     likesCount: post.likesCount - 1,
                 };
             } else {
                 await addLikeToPost(postId, user.name);
                 updatedPost = {
                     ...post,
-                    likedBy: [...likedByArray, user.name].join(', '), // Agregar usuario y convertir de nuevo a string
+                    likedBy: [...likedByArray, user.name].join(', '),
                     likesCount: post.likesCount + 1,
                 };
             }
 
-            // Actualizar el estado de los posts
             setPosts((prevPosts) => {
                 const updatedPosts = [...prevPosts];
-
-                // Si estamos en "liked" y el usuario quita su like, removemos el post
                 if (fetchType === 'liked' && !updatedPost.likedBy.includes(user.name)) {
                     return updatedPosts.filter((_, i) => i !== postIndex);
                 }
-
-                // Si no, simplemente actualizamos el post
                 updatedPosts[postIndex] = updatedPost;
                 return updatedPosts;
             });
@@ -84,9 +83,6 @@ function PostList({ fetchType }) {
         }
     };
 
-
-
-    // Alterna visibilidad y carga comentarios
     const toggleComments = async (postId) => {
         setCommentsData((prev) => ({
             ...prev,
@@ -112,6 +108,28 @@ function PostList({ fetchType }) {
         }
     };
 
+    const handleCreateComment = async (postId) => {
+        try {
+            if (!newComment.trim()) {
+                alert("El comentario no puede estar vacío");
+                return;
+            }
+            const createdComment = await addCommentToPost(postId, user.name, newComment);
+            setCommentsData((prev) => ({
+                ...prev,
+                [postId]: {
+                    ...prev[postId],
+                    comments: [...(prev[postId]?.comments || []), createdComment],
+                },
+            }));
+            setNewComment(""); // Limpiar el campo de texto
+        } catch (error) {
+            console.error('Error al crear comentario:', error);
+            alert("No se pudo crear el comentario. Intenta de nuevo.");
+        }
+    };
+    
+
     if (error) return <div>{error}</div>;
 
     return (
@@ -127,32 +145,19 @@ function PostList({ fetchType }) {
                         width: "100%"
                     }}
                 >
-                    {/* Información del usuario y la fecha */}
                     <div className="d-flex justify-content-between mb-3">
                         <span>{post.user}</span>
                         <span>{new Date(post.created_at).toLocaleDateString()}</span>
                     </div>
                     <h4 className="text-center">{post.titulo}</h4>
-
-                    {/* Imagen del post */}
-                    <div
-                        className="text-center mb-3"
-                        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                    >
+                    <div className="text-center mb-3">
                         <img
                             src={`http://localhost:3000${post.imagen}`}
                             alt="Post visual"
-                            style={{
-                                width: '300px',
-                                height: '300px',
-                                objectFit: 'cover'
-                            }}
+                            style={{ width: '300px', height: '300px', objectFit: 'cover' }}
                         />
                     </div>
-
                     <p>{post.descripcion}</p>
-
-                    {/* Likes y comentarios */}
                     <div className="d-flex justify-content-between align-items-center">
                         <div className="d-flex align-items-center">
                             <span className="me-2">{post.likesCount}</span>
@@ -169,8 +174,6 @@ function PostList({ fetchType }) {
                             {commentsData[post.id]?.visible ? 'Ocultar Comentarios' : 'Mostrar Comentarios'}
                         </button>
                     </div>
-
-                    {/* Comentarios */}
                     {commentsData[post.id]?.visible && (
                         <div className="comments-section mt-3">
                             {commentsData[post.id]?.comments ? (
@@ -186,6 +189,21 @@ function PostList({ fetchType }) {
                             ) : (
                                 <p>No hay comentarios aún.</p>
                             )}
+                            <div className="create-comment mt-3">
+                                <input
+                                    type="text"
+                                    className="form-control mb-2"
+                                    value={newComment}
+                                    onChange={(e) => setNewComment(e.target.value)}
+                                    placeholder="Escribe un comentario"
+                                />
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={() => handleCreateComment(post.id)}
+                                >
+                                    Crear Comentario
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
