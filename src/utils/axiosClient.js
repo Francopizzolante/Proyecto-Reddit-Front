@@ -78,20 +78,32 @@ export const getPostsByUser = async (user) => {
 // Obtener posts "likeados" por un usuario
 export const getPostsLikedByUser = async (user) => {
     try {
-        const response = await axiosClient.get(`/posts/user/${user}/liked`);
-        return response.data; // Devuelve los posts likeados
+        // Realiza la solicitud al endpoint correspondiente
+        const response = await axiosClient.get(`/posts/user/${encodeURIComponent(user)}/liked`);
+        
+        // Devuelve los datos de los posts likeados
+        return response.data;
     } catch (error) {
         console.error(`Error al obtener posts likeados por el usuario ${user}:`, error);
-        throw error;
+
+        // Lanza el error para que pueda ser manejado por quien llame a la función
+        throw new Error(`No se pudieron obtener los posts likeados por el usuario ${user}.`);
     }
 };
+
 
 // Agregar un like a un post
 export const addLikeToPost = async (postId, user) => {
     try {
-        const response = await axiosClient.post(`/posts/${postId}/like`, user, {
-            headers: { 'Content-Type': 'text/plain', },
-        });
+        const response = await axiosClient.post(
+            `/posts/${postId}/like`,
+            { user }, // Enviar el usuario como un objeto con la clave "user"
+            {
+                headers: {
+                    'Content-Type': 'application/json', // Asegurar que se envíe como JSON
+                },
+            }
+        );
         return response.data;
     } catch (error) {
         console.error('Error al agregar el like:', error);
@@ -99,11 +111,15 @@ export const addLikeToPost = async (postId, user) => {
     }
 };
 
+
 // Quitar un like de un post
 export const removeLikeFromPost = async (postId, user) => {
     try {
-        const response = await axiosClient.delete(`/posts/${postId}/like`, { data: user,
-            headers: {'Content-Type': 'text/plain', },
+        const response = await axiosClient.delete(`/posts/${postId}/like`, {
+            data: { user }, // Enviar el usuario como un objeto con la clave "user"
+            headers: {
+                'Content-Type': 'application/json', // Asegurar que el cuerpo se envíe como JSON
+            },
         });
         return response.data;
     } catch (error) {
@@ -111,6 +127,7 @@ export const removeLikeFromPost = async (postId, user) => {
         throw error;
     }
 };
+
 
 // Exportar la instancia de Axios y las funciones
 export default axiosClient;

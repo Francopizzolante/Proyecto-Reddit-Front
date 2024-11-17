@@ -24,7 +24,7 @@ const Comments = () => {
                 setComments(commentsWithTitles);
             } catch (err) {
                 console.error(err);
-                setError('Error al cargar los comentarios.');
+                setError('No hay commentarios que mostrar.');
             } finally {
                 setLoading(false);
             }

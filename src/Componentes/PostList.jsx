@@ -43,7 +43,10 @@ function PostList({ fetchType }) {
             if (postIndex === -1) return;
 
             const post = posts[postIndex];
-            const isLiked = post.likedBy?.includes(user.name);
+
+            // Convertir likedBy a un array si es un string
+            const likedByArray = (post.likedBy || '').split(',').map((name) => name.trim()).filter(Boolean);
+            const isLiked = likedByArray.includes(user.name);
 
             // Lógica de like/unlike
             let updatedPost;
@@ -51,32 +54,37 @@ function PostList({ fetchType }) {
                 await removeLikeFromPost(postId, user.name);
                 updatedPost = {
                     ...post,
-                    likedBy: post.likedBy.filter((u) => u !== user.name),
+                    likedBy: likedByArray.filter((u) => u !== user.name).join(', '), // Eliminar usuario y convertir de nuevo a string
                     likesCount: post.likesCount - 1,
                 };
             } else {
                 await addLikeToPost(postId, user.name);
                 updatedPost = {
                     ...post,
-                    likedBy: [...(post.likedBy || []), user.name],
+                    likedBy: [...likedByArray, user.name].join(', '), // Agregar usuario y convertir de nuevo a string
                     likesCount: post.likesCount + 1,
                 };
             }
 
-            // Actualizar posts
+            // Actualizar el estado de los posts
             setPosts((prevPosts) => {
                 const updatedPosts = [...prevPosts];
-                updatedPosts[postIndex] = updatedPost;
 
-                // Filtrar en LikesPage
-                return fetchType === 'liked' && !updatedPost.likedBy.includes(user.name)
-                    ? updatedPosts.filter((_, i) => i !== postIndex)
-                    : updatedPosts;
+                // Si estamos en "liked" y el usuario quita su like, removemos el post
+                if (fetchType === 'liked' && !updatedPost.likedBy.includes(user.name)) {
+                    return updatedPosts.filter((_, i) => i !== postIndex);
+                }
+
+                // Si no, simplemente actualizamos el post
+                updatedPosts[postIndex] = updatedPost;
+                return updatedPosts;
             });
         } catch (error) {
             console.error('Error manejando el like:', error);
         }
     };
+
+
 
     // Alterna visibilidad y carga comentarios
     const toggleComments = async (postId) => {
