@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaHeart } from 'react-icons/fa';
-import {
-    getAllPosts,
-    getPostsByUser,
-    getPostsLikedByUser,
-    getCommentsByPostId,
-    addCommentToPost, // Función para crear un comentario
-    addLikeToPost,
-    removeLikeFromPost,
-} from '../utils/axiosClient';
+import {getAllPosts, getPostsByUser, getPostsLikedByUser, getCommentsByPostId, addCommentToPost, addLikeToPost, removeLikeFromPost} from '../utils/axiosClient';
 import { useAuth0 } from '@auth0/auth0-react';
 
 function PostList({ fetchType }) {
