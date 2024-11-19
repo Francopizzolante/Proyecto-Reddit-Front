@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { FaHeart } from 'react-icons/fa';
-import {getAllPosts, getPostsByUser, getPostsLikedByUser, getCommentsByPostId, addCommentToPost, addLikeToPost, removeLikeFromPost} from '../utils/axiosClient';
+import { 
+    getAllPosts, 
+    getPostsByUser, 
+    getPostsLikedByUser, 
+    getCommentsByPostId, 
+    addCommentToPost, 
+    addLikeToPost, 
+    removeLikeFromPost, 
+    deletePostById 
+} from '../utils/axiosClient';
 import { useAuth0 } from '@auth0/auth0-react';
 
 function PostList({ fetchType }) {
@@ -8,7 +17,7 @@ function PostList({ fetchType }) {
     const [posts, setPosts] = useState([]);
     const [commentsData, setCommentsData] = useState({});
     const [error, setError] = useState(null);
-    const [newComment, setNewComment] = useState(""); // Estado para el nuevo comentario
+    const [newComment, setNewComment] = useState("");
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -24,10 +33,11 @@ function PostList({ fetchType }) {
                     case 'liked':
                         fetchedPosts = await getPostsLikedByUser(user.name);
                         break;
+                    default:
+                        fetchedPosts = [];
                 }
                 setPosts(fetchedPosts);
-            } 
-            catch (err) {
+            } catch (err) {
                 console.error('Error al cargar los posts:', err);
                 setError('No hay posts para mostrar.');
             }
@@ -52,8 +62,7 @@ function PostList({ fetchType }) {
                     likedBy: likedByArray.filter((u) => u !== user.name).join(', '),
                     likesCount: post.likesCount - 1,
                 };
-            } 
-            else {
+            } else {
                 await addLikeToPost(postId, user.name);
                 updatedPost = {
                     ...post,
@@ -70,8 +79,7 @@ function PostList({ fetchType }) {
                 updatedPosts[postIndex] = updatedPost;
                 return updatedPosts;
             });
-        } 
-        catch (error) {
+        } catch (error) {
             console.error('Error manejando el like:', error);
         }
     };
@@ -95,8 +103,7 @@ function PostList({ fetchType }) {
                         comments,
                     },
                 }));
-            } 
-            catch (error) {
+            } catch (error) {
                 console.error(`Error al cargar comentarios para el post ${postId}:`, error);
             }
         }
@@ -116,11 +123,21 @@ function PostList({ fetchType }) {
                     comments: [...(prev[postId]?.comments || []), createdComment],
                 },
             }));
-            setNewComment(""); // Limpiar el campo de texto
-        } 
-        catch (error) {
+            setNewComment("");
+        } catch (error) {
             console.error('Error al crear comentario:', error);
             alert("No se pudo crear el comentario. Intenta de nuevo.");
+        }
+    };
+
+    const handleDeletePost = async (postId) => {
+        try {
+            await deletePostById(postId); // Llama al backend para eliminar el post
+            setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId)); // Actualiza el estado local
+            alert("Post eliminado con éxito.");
+        } catch (error) {
+            console.error('Error al eliminar el post:', error);
+            alert("No se pudo eliminar el post. Intenta de nuevo.");
         }
     };
 
@@ -165,6 +182,14 @@ function PostList({ fetchType }) {
                         <button className="btn btn-light" onClick={() => toggleComments(post.id)}>
                             {commentsData[post.id]?.visible ? 'Ocultar Comentarios' : 'Mostrar Comentarios'}
                         </button>
+                        {fetchType === 'user' && ( // Muestra el botón de eliminar solo si fetchType es 'user'
+                            <button
+                                className="btn btn-danger"
+                                onClick={() => handleDeletePost(post.id)}
+                            >
+                                Eliminar
+                            </button>
+                        )}
                     </div>
                     {commentsData[post.id]?.visible && (
                         <div className="comments-section mt-3">

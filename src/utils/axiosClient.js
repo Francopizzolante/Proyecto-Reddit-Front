@@ -3,13 +3,13 @@ import axios from 'axios';
 // Crear una instancia de Axios con la configuración base
 const axiosClient = axios.create({
     baseURL: 'http://localhost:3000/api', // Cambia esto según tu URL base del backend
-    headers: { 'Content-Type': 'multipart/form-data'},
+    headers: { 'Content-Type': 'multipart/form-data'}
 });
 
 // Función para crear un nuevo post
 export const createPost = async (data) => {
     try {
-        const response = await axiosClient.post('/posts/create', data); // Endpoint correcto
+        const response = await axiosClient.post('/posts', data,{ headers: { 'Content-Type': 'multipart/form-data'}}); // Endpoint correcto
         return response.data;
     } catch (error) {
         console.error('Error creando el post:', error);
@@ -147,6 +147,16 @@ export const deleteCommentById = async (commentId) => {
     }
 };
 
+// Función para eliminar un post por su ID
+export const deletePostById = async (postId) => {
+    try {
+        const response = await axiosClient.delete(`/posts/${postId}`);
+        return response.data; // Devuelve los datos de la respuesta
+    } catch (error) {
+        console.error('Error al eliminar el post:', error.response?.data || error.message);
+        throw error; // Relanza el error para manejarlo donde se llame la función
+    }
+};
 
 // Exportar la instancia de Axios y las funciones
 export default axiosClient;
