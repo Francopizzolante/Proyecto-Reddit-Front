@@ -24,11 +24,10 @@ function PostList({ fetchType }) {
                     case 'liked':
                         fetchedPosts = await getPostsLikedByUser(user.name);
                         break;
-                    default:
-                        throw new Error('Tipo de consulta inválido');
                 }
                 setPosts(fetchedPosts);
-            } catch (err) {
+            } 
+            catch (err) {
                 console.error('Error al cargar los posts:', err);
                 setError('No hay posts para mostrar.');
             }
@@ -53,7 +52,8 @@ function PostList({ fetchType }) {
                     likedBy: likedByArray.filter((u) => u !== user.name).join(', '),
                     likesCount: post.likesCount - 1,
                 };
-            } else {
+            } 
+            else {
                 await addLikeToPost(postId, user.name);
                 updatedPost = {
                     ...post,
@@ -70,7 +70,8 @@ function PostList({ fetchType }) {
                 updatedPosts[postIndex] = updatedPost;
                 return updatedPosts;
             });
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('Error manejando el like:', error);
         }
     };
@@ -94,7 +95,8 @@ function PostList({ fetchType }) {
                         comments,
                     },
                 }));
-            } catch (error) {
+            } 
+            catch (error) {
                 console.error(`Error al cargar comentarios para el post ${postId}:`, error);
             }
         }
@@ -115,14 +117,12 @@ function PostList({ fetchType }) {
                 },
             }));
             setNewComment(""); // Limpiar el campo de texto
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('Error al crear comentario:', error);
             alert("No se pudo crear el comentario. Intenta de nuevo.");
         }
     };
-    
-
-    if (error) return <div>{error}</div>;
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

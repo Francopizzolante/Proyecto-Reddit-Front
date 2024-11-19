@@ -4,7 +4,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 // Componente BarraLateral: Renderiza una barra lateral fija con la foto, nombre del usuario y enlaces de navegación.
 function BarraLateral() {
-
+  
   const { user } = useAuth0();
 
   return (
@@ -21,12 +21,7 @@ function BarraLateral() {
       >
         
         {/* Imagen de perfil del usuario */}
-        <img
-          src={user.picture}
-          alt={user.name}
-          className="rounded-circle mb-3"
-          style={{ width: '100px', height: '100px' }}
-        />
+        <img src={user.picture} alt={user.name} className="rounded-circle mb-3" style={{ width: '100px', height: '100px' }}/>
 
         {/* Nombre del usuario */}
         <h5>{user.name}</h5>

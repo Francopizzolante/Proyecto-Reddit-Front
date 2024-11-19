@@ -16,20 +16,17 @@ function BarraSuperior() {
             className="form-control"
             placeholder="Buscar..."
             aria-label="Buscar"
-            aria-describedby="button-buscar"
           />
 
           {/* Botón de búsqueda */}
           <div className="input-group-append">
-            <button className="btn btn-outline-light" type="button" id="button-buscar"> Buscar </button>
+            <button className="btn btn-outline-light" type="button"> Buscar </button>
           </div>
         </div>
       </div>
 
       {/* Botón de Logout alineado a la derecha */}
-      <div className="ml-auto">
-        <button className="btn btn-danger" onClick={() => logout({ returnTo: window.location.origin })}> Logout </button>
-      </div>
+      <button className="btn btn-danger ml-auto" onClick={() => logout({ returnTo: window.location.origin })}> Logout </button>
     </div>
   );
 }

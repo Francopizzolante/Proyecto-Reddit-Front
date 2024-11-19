@@ -45,12 +45,9 @@ function CrearPost() {
             alert('Post creado con éxito');
 
             // Reiniciar el formulario
-            setFormData({
-                titulo: '',
-                descripcion: '',
-                imagen: null,
-            });
-        } catch (error) {
+            setFormData({ titulo: '', descripcion: '', imagen: null });
+        } 
+        catch (error) {
             console.error('Error al crear el post:', error);
             alert('Ocurrió un error al crear el post.');
         }

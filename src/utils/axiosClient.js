@@ -3,10 +3,7 @@ import axios from 'axios';
 // Crear una instancia de Axios con la configuración base
 const axiosClient = axios.create({
     baseURL: 'http://localhost:3000/api', // Cambia esto según tu URL base del backend
-    headers: {
-        'Content-Type': 'application/json',
-        'Content-Type': 'multipart/form-data',
-    },
+    headers: { 'Content-Type': 'multipart/form-data'},
 });
 
 // Función para crear un nuevo post
